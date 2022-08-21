@@ -1,20 +1,38 @@
 package com.odhiambopaul.newsdesk.android
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.odhiambopaul.newsdesk.Greeting
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.ui.ExperimentalComposeUiApi
+import com.odhiambopaul.newsdesk.android.components.ListViewItem
+import com.odhiambopaul.newsdesk.android.theme.NewsDeskTheme
+import com.odhiambopaul.newsdesk.repository.ListItemRepository
+import com.odhiambopaul.newsdesk.repository.ListItemRepositoryImpl
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
-fun greet(): String {
-    return Greeting().greeting()
-}
 
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
+@ExperimentalComposeUiApi
 class MainActivity : AppCompatActivity() {
+    private val listRepository: ListItemRepository = ListItemRepositoryImpl()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val tv: TextView = findViewById(R.id.text_view)
-        tv.text = greet()
+        setContent {
+            NewsDeskTheme {
+                LazyColumn() {
+                    items(items = listRepository.listItems()) {
+                        ListViewItem(
+                            title = it.title,
+                            subtitle = it.subtitle,
+                            imageUrl = R.drawable.sample
+                        )
+                    }
+                }
+            }
+        }
     }
 }

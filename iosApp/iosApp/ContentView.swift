@@ -1,16 +1,34 @@
 import SwiftUI
 import shared
 
+class ContentViewProxy : ObservableObject {
+    
+    @Published
+    var listItems : [ListEntry] = []
+    
+    let repository = ListItemRepositoryImpl()
+    
+    func load() {
+        listItems = repository.listItems()
+    }
+    
+}
 struct ContentView: View {
-	let greet = Greeting().greeting()
-
-	var body: some View {
-		Text(greet)
-	}
+    
+    @ObservedObject
+    var proxy = ContentViewProxy()
+    
+    var body: some View {
+        List(proxy.listItems, id: \.title) { listItem in
+            ListViewItem(title: listItem.title, subtitle: listItem.subtitle, imageUrl: "SampleImage")
+        }.onAppear(perform: {
+            proxy.load()
+        })
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
-	}
+    static var previews: some View {
+        ContentView()
+    }
 }
